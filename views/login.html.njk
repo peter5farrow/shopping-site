@@ -1,0 +1,17 @@
+{% extends 'base.html.njk' %} {% block body %}
+
+<h2 id="login-head">Login</h2>
+
+<form action="/process-login" method="POST" class="form-signin">
+  <label for="username-input">Username:</label>
+  <input type="text" name="username" id="username-input" />
+
+  <label for="password-input">Password:</label>
+  <input type="text" name="password" id="password-input" />
+
+  <button type="submit" id="submit-button">Login</button>
+</form>
+
+<h3 id="login-err">{{ error }}</h3>
+
+{% endblock %}
