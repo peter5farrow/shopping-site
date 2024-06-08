@@ -1,6 +1,7 @@
-{% extends 'base.html.njk' %}
+{% extends 'base.html.njk' %} {% block body %} {% if user %}
+<h2>{{ user }}'s Cart</h2>
+{% endif %}
 
-{% block body %}
 <table class="table table-striped mt-3">
   <thead>
     <tr>
@@ -11,7 +12,7 @@
     </tr>
   </thead>
   <tbody>
-  {% for animal in animalsInCart %}
+    {% for animal in animalsInCart %}
     <tr>
       <td>{{ animal.name }}</td>
       <td>{{ animal.quantity }}</td>

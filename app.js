@@ -20,6 +20,7 @@ nunjucks.configure("views", {
   express: app,
 });
 
+// Gets info for a specific animal
 function getAnimalDetails(animalId) {
   return stuffedAnimalData[animalId];
 }
@@ -28,12 +29,14 @@ app.get("/", (req, res) => {
   res.render("index.html");
 });
 
+// Animals homepage
 app.get("/all-animals", (req, res) => {
   res.render("all-animals.html.njk", {
     animals: Object.values(stuffedAnimalData),
   });
 });
 
+// Page for individual animals
 app.get("/animal-details/:animalId", (req, res) => {
   const animalDetails = getAnimalDetails(req.params.animalId);
   res.render("animal-details.html.njk", { animal: animalDetails });
@@ -51,7 +54,7 @@ app.get("/add-to-cart/:animalId", (req, res) => {
   }
   sesh.cart[animalId] += 1;
 
-  console.log(sesh.cart);
+  console.log(sesh);
   res.redirect("/cart");
 });
 
@@ -72,26 +75,62 @@ app.get("/cart", (req, res) => {
     animalsInCart.push(animalObj);
   }
 
-  // Make sure your function can also handle the case where no cart has
-  // been added to the session
-
-  res.render("cart.html.njk", { animalsInCart: animalsInCart, total: total });
+  if (sesh["username"]) {
+    const user = sesh.username;
+    res.render("cart.html.njk", {
+      animalsInCart: animalsInCart,
+      total: total,
+      user: user,
+    });
+  } else {
+    res.render("cart.html.njk", {
+      animalsInCart: animalsInCart,
+      total: total,
+    });
+  }
 });
 
 app.get("/checkout", (req, res) => {
-  // Empty the cart.
   req.session.cart = {};
   res.redirect("/all-animals");
 });
 
 app.get("/login", (req, res) => {
-  // TODO: Implement this
-  res.send("Login has not been implemented yet!");
+  res.render("login.html.njk");
 });
 
 app.post("/process-login", (req, res) => {
-  // TODO: Implement this
-  res.send("Login has not been implemented yet!");
+  const username = req.body.username;
+  const password = req.body.password;
+
+  const isUser = (un, pw) => {
+    for (const user of users) {
+      if (un === user.username && pw === user.password) {
+        return true;
+      }
+    }
+  };
+
+  if (isUser(username, password)) {
+    const sesh = req.session;
+    sesh["username"] = username;
+    res.redirect("/all-animals");
+    console.log(sesh);
+  } else {
+    const error = "Please enter a valid username and password.";
+    res.render("login.html.njk", {
+      error: error,
+    });
+  }
+});
+
+app.get("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.log(err);
+    }
+    res.redirect("/all-animals");
+  });
 });
 
 app.listen(port, () => {

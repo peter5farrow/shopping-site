@@ -21,3 +21,9 @@ div.summary img {
   max-width: 330px;
   margin: 5em auto 0 auto; /* TRBL */
 }
+
+#login-head,
+#login-err {
+  text-align: center;
+  margin-top: 2em;
+}
